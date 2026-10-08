@@ -1,0 +1,20 @@
+services:
+  exchange:
+    build: .
+    ports:
+      # EXCHANGE_PORT lets a second stack (e.g. the integration tests)
+      # run alongside a dev stack without colliding.
+      - "${EXCHANGE_PORT:-8000}:8000"
+    environment:
+      EXCHANGE_DB: /data/exchange.db
+    volumes:
+      - exchange-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  exchange-data:
